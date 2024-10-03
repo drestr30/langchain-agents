@@ -64,10 +64,10 @@ def synthesize_voice_to_memory(text):
         raise RuntimeError(f"Speech synthesis canceled: {cancellation_details.reason}. Error details: {cancellation_details.error_details}")
 
 # Example usage:
-text = "Hello, this is a sample text to speech conversion using Azure."
+# text = "Hello, this is a sample text to speech conversion using Azure."
 
-# Save the synthesized speech to a WAV file
-text_to_speech(text, output_audio_file="output_audio.wav")
+# # Save the synthesized speech to a WAV file
+# text_to_speech(text, output_audio_file="output_audio.wav")
 
 # Get the synthesized speech as in-memory audio (bytes)
 # audio_data = synthesize_voice_to_memory(text)

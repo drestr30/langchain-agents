@@ -9,6 +9,7 @@ load_dotenv()
 # Fetch Azure Speech key and region from .env file
 subscription_key = os.getenv("AZURE_SPEECH_KEY")
 region = os.getenv("AZURE_REGION")
+print('STT envs:, {subscription_key} {region}')
 
 def transcribe_audio_from_file(audio_file_path):
     # Initialize the speech configuration with your subscription key and region

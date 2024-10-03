@@ -1,9 +1,9 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from psycopg2.extensions import connection
 import psycopg2
 
-load_dotenv()
+# load_dotenv()
 
 def query_to_list(query, args=(), one=False):
     print('running query_to_list ...')

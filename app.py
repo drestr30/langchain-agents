@@ -14,6 +14,17 @@ import base64
 from time import sleep
 from pydub import AudioSegment
 import io
+import os 
+
+os.environ["AZURE_OPENAI_API_VERSION"] = st.secrets["AZURE_OPENAI_API_VERSION"]
+os.environ["AZURE_OPENAI_ENDPOINT"] = st.secrets["AZURE_OPENAI_ENDPOINT"]
+os.environ["AZURE_SPEECH_KEY"] = st.secrets["AZURE_SPEECH_KEY"]
+os.environ["AZURE_REGION"] = st.secrets["AZURE_REGION"]
+os.environ['POSTGRES_REMOTE_ENDPOINT'] = st.secrets['POSTGRES_REMOTE_ENDPOINT']
+os.environ['POSTGRES_REMOTE_USER'] = st.secrets['POSTGRES_REMOTE_USER']
+os.environ['POSTGRES_REMOTE_PASSWORD'] = st.secrets['POSTGRES_REMOTE_PASSWORD']
+os.environ['POSTGRES_DB_NAME'] = st.secrets['POSTGRES_DB_NAME']
+os.environ['POSTGRES_SSL_MODE'] = st.secrets['POSTGRES_SSL_MODE']
 
 def autoplay_audio(file_path: str):
     with open(file_path, "rb") as f:

@@ -1,0 +1,10 @@
+*.wav
+*.ipynb
+__pycache__/
+agent-service-toolkit/
+*.pdf
+.venv/
+*.drawio
+*.db*
+langflow/*
+*.csv

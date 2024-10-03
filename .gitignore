@@ -8,3 +8,4 @@ agent-service-toolkit/
 *.db*
 langflow/*
 *.csv
+.env

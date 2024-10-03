@@ -1,15 +1,15 @@
 import azure.cognitiveservices.speech as speechsdk
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import io
 
 # Load environment variables from .env file
-load_dotenv()
+# load_dotenv()
 
 # Fetch Azure Speech key and region from .env file
 subscription_key = os.getenv("AZURE_SPEECH_KEY")
 region = os.getenv("AZURE_REGION")
-print('STT envs:, {subscription_key} {region}')
+print(f'STT envs:, {subscription_key} {region}')
 
 def transcribe_audio_from_file(audio_file_path):
     # Initialize the speech configuration with your subscription key and region

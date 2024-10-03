@@ -10,7 +10,7 @@ from langchain_core.runnables import Runnable, RunnableConfig
 import datetime 
 from langchain_openai import AzureChatOpenAI
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 try:
     # Try relative import when used as part of a package
@@ -28,7 +28,7 @@ except ImportError:
     from policies import rag_tool
     from tools import search_user_info
 
-load_dotenv()
+# load_dotenv()
 
 class Assistant:
     def __init__(self, runnable: Runnable):

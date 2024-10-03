@@ -216,7 +216,7 @@ if "messages" not in st.session_state:
     reset_state()
 messages: List[ChatMessage] = st.session_state.messages
 
-chat = st.container(height=600)
+chat = st.container(height=400)
 
 # st.button('Reset', on_click=reset_state)
 

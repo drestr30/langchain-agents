@@ -3,10 +3,10 @@ from langchain_core.runnables import RunnableConfig
 
 try:
     # Try relative import when used as part of a package
-    from .db_operations import *
+    from db_client import *
 except ImportError:
     # Fallback to absolute import when running directly
-    from db_operations import *
+    from .db_client import get_customer_info, update_customer_address
 
 
 # @tool 

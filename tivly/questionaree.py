@@ -6,9 +6,12 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langgraph.prebuilt import tools_condition
 from langgraph.graph import END
 from langchain_openai import AzureChatOpenAI
-from .utils import CompleteOrEscalate, State
 import numpy as np
 import os
+try:
+    from utils import CompleteOrEscalate, State
+except ImportError:
+    from .utils import CompleteOrEscalate, State
 
 @tool 
 def create_ticket() -> str:
@@ -102,9 +105,8 @@ Guidelines:
 
 Always provide feedback to the custmer when running tools or doing validations.
 If you need more information or the customer changes their mind, escalate the task back to the main assistant.
-Remember that a renwal isn't completed until after the client has agreed to a term, rate and expressed to continue with the renewal
-\n\nCurrent user mortagage information:\n\n{user_info}\n
-\n\nIf the user needs help with a different task than renewal, and none of your tools are appropriate for it, then
+Remember that a questionaree isn't completed until all the questions has been fully addressed, 
+\n\nIf the user needs help with a different task than answering the questionaree, and none of your tools are appropriate for it, then
 "CompleteOrEscalate" the dialog to the host assistant. Do not waste the user\'s time. Do not make up invalid tools or functions.
 """
 #" When searching, be persistent. Expand your query bounds if the first search returns no results. "

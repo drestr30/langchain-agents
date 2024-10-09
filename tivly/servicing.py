@@ -5,8 +5,13 @@ from typing import Literal
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langgraph.prebuilt import tools_condition
 from langgraph.graph import END
-from .utils import CompleteOrEscalate, State
-from tivly.questionaree import search_user_info
+
+try:
+    from utils import CompleteOrEscalate, State
+    from questionaree import search_user_info
+except ImportError:
+    from .questionaree import search_user_info
+    from .utils import CompleteOrEscalate, State
 
 # @tool 
 # def search_user_info() -> str:

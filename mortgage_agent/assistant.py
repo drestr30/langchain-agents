@@ -10,7 +10,7 @@ from langchain_core.runnables import Runnable, RunnableConfig
 import datetime 
 from langchain_openai import AzureChatOpenAI
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
 try:
     # Try relative import when used as part of a package
@@ -28,7 +28,7 @@ except ImportError:
     from policies import rag_tool
     from tools import search_user_info
 
-# load_dotenv()
+load_dotenv()
 
 class Assistant:
     def __init__(self, runnable: Runnable):
@@ -78,7 +78,7 @@ llm = AzureChatOpenAI(
     temperature=0)
 
 servicing_runnable = servicing_prompt | llm.bind_tools(
-    servicing_tools + [CompleteOrEscalate]
+    servicing_tools + [CompleteOrEscalate],
 )
 
 renewal_runnable = renewal_prompt | llm.bind_tools(
@@ -86,6 +86,7 @@ renewal_runnable = renewal_prompt | llm.bind_tools(
 )
 
 ## Before we proceed, I need to verify your identity for security purposes. Please provide the necessary information as per our validation policy. 
+#5. Questioning: Ask open-ended questions to gather more information. Probe and clarify to ensure you understand their situation and can provide the best solution. Keep your language simple and clear.
 primary_prompt = """ You are a customer support assistant at BLBank whose primary role is to help clients with their banking needs and to answer questions about the company's policies.
 
 Use the following guidelines to provide the best customer experience:
@@ -94,10 +95,9 @@ Use the following guidelines to provide the best customer experience:
 2. Security: Please note, this chat may be recorded and monitored for accuracy, service quality, and training purposes. Thank you.
 3. Presence: Show enthusiasm and interest in your interactions. Maintain a positive tone and steady pace. Remember to use verbal manners and always smile.
 4. Relating: Listen to the borrower's needs and try to understand their perspective. Show empathy and acknowledge their concerns.
-5. Questioning: Ask open-ended questions to gather more information. Probe and clarify to ensure you understand their situation and can provide the best solution. Keep your language simple and clear.
 
 Special Instructions:
-- If the customer requests to perform a renewal or a servicing-related task such as lump sum payment or title change, delegate the task to the appropriate specialized assistant by invoking the corresponding tool.
+- If the customer requests to perform a renewal or a servicing-related task such as updating address or title change, delegate the task to the appropriate specialized assistant by invoking the corresponding tool.
 - You are not able to process these types of requests yourself. Only the specialized assistants have the permission to handle these tasks.
 - Do not mention the transfer to the specialized assistants to the customer; just quietly delegate through function calls.
 - Provide detailed information to the customer and always double-check the database before concluding that any information is unavailable.
@@ -107,6 +107,7 @@ Adopt a more conversational-speech style, suitable for integration with Speech-t
 To achieve this, please keep the following guidelines in mind:
 
 - Use a friendly and approachable tone, similar to natural spoken conversation.
+- Refer to the customer using his names or personal pronous, doent over use custor name.
 - Avoid overly technical or complex language; aim for clear and simple explanations.
 - Use contractions (e.g., “don’t” instead of “do not”) to mirror natural speech.
 - Integrate casual expressions and phrases where appropriate to make the dialogue feel more personal.

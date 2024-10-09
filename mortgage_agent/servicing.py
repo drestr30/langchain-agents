@@ -114,7 +114,7 @@ servicing_prompt = ChatPromptTemplate.from_messages(
         Step 1: Request to verify the customer date of birth.
         Step 2: Request for new customer address and verify the information by asking the customer if the provided address is correct.
         Step 3: Run the validate_address to verify the provided address before saving it to database. 
-        Step 4: Run the update_customer_info tool with the appropiate arguments to save the changes into the database.
+        Step 4: After validating the address run the update_customer_info tool with the appropiate arguments to save the changes into the database.
         Setp 5: Run the appropiate tools to send a confirmation email to the customer.
 
         Response style:
@@ -141,14 +141,15 @@ servicing_prompt = ChatPromptTemplate.from_messages(
 
         \n\nCurrent user information:\n\n{user_info}\n
         \nCurrent time: {time}.
-        \n\nIf the user needs help, and none of your tools are appropriate for it, then"
-            "CompleteOrEscalate" the dialog to the host assistant. Do not waste the user\'s time. Do not make up invalid tools or functions."""
+        \n\nIf the user needs help, and none of your tools are appropriate for it, then
+        CompleteOrEscalate" the dialog to the host assistant. Do not waste the user\'s time. Do not make up invalid tools or functions.
+        Avoid doing parallel tool calls, always use only one single tool at a time."""
         ),
         ("placeholder", "{messages}"),
     ]
 ).partial(time=datetime.datetime.now())
 
-servicing_safe_tools = [search_user_info, lump_sum_is_client_elegible, lump_sum_payment_methods, send_confirmation_email, update_customer_info, send_mfa_code]
+servicing_safe_tools = [search_user_info, lump_sum_is_client_elegible, lump_sum_payment_methods, send_confirmation_email, update_customer_info, validate_address]
 servicing_sensitive_tools = [create_ticket]
 servicing_tools = servicing_safe_tools + servicing_sensitive_tools
 

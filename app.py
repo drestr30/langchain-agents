@@ -1,30 +1,41 @@
 import streamlit as st
 from openai import OpenAI
 from mortgage_agent.utils import _print_ai_message, _print_event
-# from tivly.manager import agent
 from typing import List, Generator
 import numpy as np
 from schema import ChatMessage
 from PIL import Image
-# from st_audiorec import st_audiorec
 from audiorecorder import audiorecorder
 from stt import transcribe_audio_from_memory, transcribe_audio_from_file
 from tts import text_to_speech
 import base64
 from time import sleep
 from pydub import AudioSegment
+from mortgage_agent.assistant import agent
+# from tivly.manager import agent
 import io
+import random
 import os 
 
 os.environ["AZURE_OPENAI_API_VERSION"] = st.secrets["AZURE_OPENAI_API_VERSION"]
 os.environ["AZURE_OPENAI_ENDPOINT"] = st.secrets["AZURE_OPENAI_ENDPOINT"]
 os.environ["AZURE_SPEECH_KEY"] = st.secrets["AZURE_SPEECH_KEY"]
 os.environ["AZURE_REGION"] = st.secrets["AZURE_REGION"]
-os.environ['POSTGRES_REMOTE_ENDPOINT'] = st.secrets['POSTGRES_REMOTE_ENDPOINT']
-os.environ['POSTGRES_REMOTE_USER'] = st.secrets['POSTGRES_REMOTE_USER']
-os.environ['POSTGRES_REMOTE_PASSWORD'] = st.secrets['POSTGRES_REMOTE_PASSWORD']
-os.environ['POSTGRES_DB_NAME'] = st.secrets['POSTGRES_DB_NAME']
-os.environ['POSTGRES_SSL_MODE'] = st.secrets['POSTGRES_SSL_MODE']
+
+
+st.markdown(
+            """
+        <style>
+            .st-emotion-cache-1c7y2kd {
+                flex-direction: row-reverse;
+                text-align: right;
+            }
+        </style>
+        """,
+            unsafe_allow_html=True,
+        )
+
+# <div class="stChatMessage st-emotion-cache-1c7y2kd eeusbqq4" data-testid="stChatMessage"><img src="http://localhost:8501/media/a11a3a20a2abfc13402e8e520e51ee355235f7e40f85ceac79fc6b92.png" alt="human avatar" class="st-emotion-cache-p4micv eeusbqq0"><div data-testid="stChatMessageContent" aria-label="Chat message from human" class="st-emotion-cache-1flajlm eeusbqq3"><div data-testid="stVerticalBlockBorderWrapper" data-test-scroll-behavior="normal" class="st-emotion-cache-0 e1f1d6gn0"><div class="st-emotion-cache-1wmy9hl e1f1d6gn1"><div width="594" data-testid="stVerticalBlock" class="st-emotion-cache-1l0ei5a e1f1d6gn2"><div data-stale="false" width="594" class="element-container st-emotion-cache-e1l2z6 e1f1d6gn4" data-testid="element-container"><div class="stMarkdown" data-testid="stMarkdown" style="width: 594px;"><div data-testid="stMarkdownContainer" class="st-emotion-cache-1rsyhoq e1nzilvr5"><p>Hi, I'd like to update my home address.</p></div></div></div></div></div></div></div></div>
 
 def autoplay_audio(file_path: str):
     with open(file_path, "rb") as f:
@@ -133,13 +144,11 @@ def draw_messages(
                         else:
                             st.write(msg.content)
 
-                        if is_new: #if is a new message, generate the voice a play it
-                            text_to_speech(msg.content)
-                            duration = autoplay_audio("output.wav")
-                            if duration >= 3:
-                                sleep(duration)
-                            else:
-                                sleep(duration-3)
+                        # if is_new: #if is a new message, generate the voice a play it
+                        #     # pass
+                        #     text_to_speech(msg.content)
+                        #     duration = autoplay_audio("output.wav")
+                        #     sleep(duration * 0.9)
 
                     if msg.tool_calls:
                         # Create a status container for each tool call and store the
@@ -157,7 +166,7 @@ def draw_messages(
 
                         # Expect one ToolMessage for each tool call.
                         for _ in range(len(call_results)):
-                            tool_result: ChatMessage = next(messages_iter)
+                            tool_result: ChatMessage = next(messages_iter, None)
                             if not tool_result.type == "tool":
                                 st.error(f"Unexpected ChatMessage type: {tool_result.type}")
                                 st.write(tool_result)
@@ -183,51 +192,35 @@ def message_generator(messages) -> Generator[ChatMessage, None, None]:
     for mes in messages:
         yield ChatMessage.from_langchain(mes)
 
-config = {
-    "configurable": {
-        # The passenger_id is used in our flight tools to
-        # fetch the user's flight information
-        "customer_id": 1,
-        # Checkpoints are accessed by thread_id
-        "thread_id": '124',
-    }
-}
 # _printed = set()
 _loggs = set()
 st.title("BL Agents")
 
-# with st.sidebar:
-#     wav_audio_data = st_audiorec()
-
-#     if wav_audio_data is not None:
-#         st.audio(wav_audio_data, format='audio/wav')
-
-
 human_avatar = Image.open("./human_asset.png")
 ai_avatar = Image.open("./ai_asset.png")
 
-# option = st.selectbox(
-#     "Mortgage Agent",
-#     ("Mortgage Agent", "Tivly Agent"),
-# )
-
-# if option == 'Mortgage Agent':
-from mortgage_agent.assistant import agent
 selected_agent = agent 
-# elif option == 'Tivly Agent': 
-#     from tivly.manager import agent
-#     selected_agent = agent 
 
 def reset_state():
     st.session_state.messages =  []
     st.session_state._printed = set()
+    st.session_state.thread = str(random.randint(1, 100))
+
 
 # Initialize chat history
 if "messages" not in st.session_state:
     reset_state()
 messages: List[ChatMessage] = st.session_state.messages
 
-chat = st.container(height=400)
+config = {
+    "configurable": {
+        "customer_id": 1,
+        # Checkpoints are accessed by thread_id
+        "thread_id": str(st.session_state.thread),
+    }
+}
+
+chat = st.container(height=500)
 
 # st.button('Reset', on_click=reset_state)
 
@@ -244,23 +237,8 @@ def amessage_iter(messages):
 
 draw_messages(amessage_iter(messages), chat=chat)
 
-
-# Display chat messages from history on app rerun
-# for message in st.session_state.messages:
-#     with st.chat_message(message["role"]):
-#         st.markdown(message["content"])
-
-    # React to user input
-    
-
-# msg, rec = st.columns([0.5, 0.5])
-
-# with msg:
 msg_input = st.chat_input("How can I help you?")
-# with rec:
 audio = audiorecorder(start_prompt="", stop_prompt="", pause_prompt="", show_visualizer=True, key=None)
-
-# elif transcription:
 
 transcription = None
 if len(audio) > 0: 
@@ -268,8 +246,9 @@ if len(audio) > 0:
     audio.export("audio.wav", format="wav")
     # st.audio(audio.export().read()) 
     transcription = transcribe_audio_from_file("audio.wav")
-    print(transcription)
-    
+    print(f"transcription: {transcription}")
+    audio = None
+    os.remove("audio.wav")
     # cshat.chat_message("human", avatar=human_avatar).write(transcription)
     # user_input = transcription
 
@@ -281,31 +260,23 @@ elif transcription:
 
 if user_input :#:
     # Display user message in chat message container
-    # st.chat_message("user").markdown(user_input)
-    # # Add user message to chat history
-    # st.session_state.messages.append({"role": "user", "content": user_input})
-
     messages.append(ChatMessage(type="human", content=user_input))
+    # draw_messages(messages_iter=amessage_iter(messages), chat=chat)
     chat.chat_message("human", avatar=human_avatar).write(user_input)
+    
 
-    # print(f"Echo: {user_input}")
-
-    # Display assistant response in chat message container
-    # with st.chat_message("assistant"):
+    # Get agent events
     events = selected_agent.stream(
             {"messages": ("user", user_input)}, config, stream_mode="values"
         )
- 
+
     for event in events:
-        pass
-        # _print_event(event, _loggs) #logs event
-        # last_messages = event.get('messages')
-    # print(f'last messages {event}')
-  
-    
+        # pass
+        _print_event(event, _loggs) #logs event
+
     new_events = _print_ai_message(event, st.session_state._printed) #message to end user
     # print(f"_printed : {st.session_state._printed}")
-    print(f'new events to draw: {new_events}')
+    # print(f'new events to draw: {new_events}')
     draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat)
-
+    # st.rerun()
 

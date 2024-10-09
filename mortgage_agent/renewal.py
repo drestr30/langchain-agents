@@ -18,7 +18,6 @@ except ImportError:
     from utils import CompleteOrEscalate, State
 
 
-
 # @tool 
 # def search_user_info() -> str:
 #     "Run this tool to retrieve the customer information"
@@ -98,13 +97,17 @@ def retantion_rate(counter_rate:float) -> float:
 #     return f"{term} Year - {rate}%"
 
 @tool 
-def create_ticket(title:str) -> str:
-    "Run this tool to create a ticket in the CRM for the current issue"
+def create_ticket(title:str, subject:str) -> str:
+    """Run this tool to create a ticket in the CRM for the current issue
+    Args: 
+        title: str title describing the type of the ticket
+        subject: str A short description of the purpose and content of the ticket
+    """
     return f'Ticket {title} succesfully created'
 
 @tool
 def send_documents_to_sign(email: str) -> str:
-    """ Run this tools to send a request for document signature to the client.
+    """ Run this tools to send the documents for signature after the customer agrees to a term for his renewal.
      Args:
       email: str Customer email """
     return f"documents send to {email}"
@@ -141,11 +144,13 @@ If a customer expresses interest in renewal, follow these steps:
    - Once the customer agrees to a term and rate, informe the customer they will receive an email to sign the paper work
 
 6. **Manage Documentation:**
-   - Request and send the necessary documents to the customer.
-   - Confirm receipt of the required documents and create a follow-up ticket for further discussion.
+   - Run the send_document_to_client tool to send the send the documents for signature to the customer.
+   - Confirm receipt of the required documents and run the create_ticket to be reviewed for a mortgage specialist.
 
 7. **Escalation Options:**
-    - If the customer remain unsatisfatied with the options offer either to connect with one of our mortgage specialist or submit an exception request, with the promise to get back to the customer via email.
+    - If the customer remains unsatisfatied with the options offer the following options:
+      - connect with one of our mortgage specialist or
+      - submit an exception request ticket with the promise to get back to the customer via email.
 
 ### Guidelines for Effective Negotiation
 
@@ -190,7 +195,14 @@ Assistant:Thank you. Let’s get started. Our current posted rate is [posted rat
 Customer: That’s a bit high, can you do any better than that?
 Assistant: Let me check. Given you’re a long-time customer, I can offer you [discounted rate]. This is our preferred rate for valuable clients.
 Customer: I’ve got another offer for 4.8%. Can you match that?
-Assistant:Got it. I can match that rate at [minimal rate or higher], which is the best I’m authorized to offer. I do need you to share a proof of the offer from the other institution.
+Assistant:Got it. I can match that rate at [minimal rate or higher], which is the best I’m authorized to offer. I do need you to share a proof of the offer from the other institution. [state the benefits of renewing the current mortgage]
+Customer: Thank you for understanding, but I’m still looking for an even lower rate.
+Assistant:I appreciate your persistence. Here’s what we can do:
+• I can connect you with a mortgage specialist to explore further options.
+• Or, we can submit an exception request, and you'll get an update via email.
+Which would you prefer?
+Customer: Let’s go with the exception request.
+Assistant: Done. You’ll receive a confirmation email shortly, and we’ll follow up with an update shortly. Thank you for choosing us. Anything else I can assist with today?
 
 ### Additional Information
 
@@ -223,8 +235,8 @@ renewal_prompt = ChatPromptTemplate.from_messages(
     ]
 )#.partial(time=datetime.now())
 
-renewal_safe_tools = [search_user_info, fetch_posted_rates, discounted_rate, retantion_rate, send_documents_to_sign, transfer_human_agent]
-renewal_sensitive_tools = [create_ticket]
+renewal_safe_tools = [search_user_info, fetch_posted_rates, discounted_rate, retantion_rate, send_documents_to_sign, transfer_human_agent, create_ticket]
+renewal_sensitive_tools = []
 renewal_tools = renewal_safe_tools + renewal_sensitive_tools
 
 
@@ -240,7 +252,7 @@ def route_renewal(
 ) -> Literal[
     "renewal_sensitive_tools",
     "renewal_safe_tools",
-    # "leave_skill",
+    "leave_skill",
     "__end__",
 ]:
     route = tools_condition(state)

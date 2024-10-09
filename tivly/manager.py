@@ -10,9 +10,14 @@ from langchain_core.runnables import Runnable, RunnableConfig
 import datetime 
 from langchain_openai import AzureChatOpenAI
 import os
-from utils import create_tool_node_with_fallback, CompleteOrEscalate, create_entry_node, State, pop_dialog_state
-from questionaree import *
 from dotenv import load_dotenv
+
+try:
+    from utils import create_tool_node_with_fallback, CompleteOrEscalate, create_entry_node, State, pop_dialog_state
+    from questionaree import *
+except ImportError:
+    from .utils import create_tool_node_with_fallback, CompleteOrEscalate, create_entry_node, State, pop_dialog_state
+    from .questionaree import *
 
 load_dotenv()
 
@@ -78,7 +83,6 @@ If a customer requests help to adquire an insurance for his bussiness, delegate 
 You are not able to make these types of process by yourself. Only the specialized assistants are given permission to do this for the user.
 The user is not aware of the different specialized assistants, so do not mention them; just quietly delegate through function calls. 
 Provide detailed information to the customer, and always double-check the database before concluding that information is unavailable. 
-\n\nCurrent user information:\n\n{user_info}\n
 \nCurrent time: {time} """# ".",
 
 # Listening: Practice active listening, not just hearing. Take notes and pay full attention to the borrower. Avoid interruptions and paraphrase their statements to ensure understanding.

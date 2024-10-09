@@ -91,10 +91,10 @@ class ChatMessage(BaseModel):
         original = message_to_dict(message)
         match message:
             case HumanMessage():
-                human_message = cls(type="human", content=message.content, original=original)
+                human_message = cls(type="human", content=message.content)#, original=original)
                 return human_message
             case AIMessage():
-                ai_message = cls(type="ai", content=message.content, original=original)
+                ai_message = cls(type="ai", content=message.content)#, original=original)
                 if message.tool_calls:
                     ai_message.tool_calls = message.tool_calls
                 return ai_message
@@ -103,7 +103,7 @@ class ChatMessage(BaseModel):
                     type="tool",
                     content=message.content,
                     tool_call_id=message.tool_call_id,
-                    original=original,
+                   # original=original,
                 )
                 return tool_message
             case _:

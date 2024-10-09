@@ -1,9 +1,9 @@
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from psycopg2.extensions import connection
 import psycopg2
 
-# load_dotenv()
+load_dotenv()
 
 def query_to_list(query, args=(), one=False):
     print('running query_to_list ...')
@@ -32,8 +32,8 @@ def connect_db()-> connection:
     print("Postgres Connection established")
     return conn
 
-def get_customer_info(customer_id:str)-> str:
-    conn = connect_db()
+def db_get_customer_info(conn, customer_id:str)-> str:
+    # conn = connect_db()
     try:
         with conn.cursor() as cursor:
             query = """
@@ -53,9 +53,9 @@ def get_customer_info(customer_id:str)-> str:
     finally:
         conn.close()
 
-def update_customer_address(new_address, customer_id) -> str:
+def db_update_customer_address(conn, new_address, customer_id) -> str:
     msg = "success"
-    conn = connect_db()
+    # conn = connect_db()
     try:
         with conn.cursor() as cursor:
             query = """

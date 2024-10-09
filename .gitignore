@@ -9,3 +9,5 @@ agent-service-toolkit/
 langflow/*
 *.csv
 .env
+.vscode/
+secrets.toml

@@ -12,6 +12,7 @@ import base64
 from time import sleep
 from pydub import AudioSegment
 from mortgage_agent.assistant import agent
+from streamlit_extras.stateful_button import button
 # from tivly.manager import agent
 import io
 import random
@@ -64,7 +65,8 @@ def autoplay_audio(file_path: str):
 def draw_messages(
     messages_iter,
     is_new=False,
-    chat=None
+    chat=None,
+    voice=False
 ):
     """
     Draws a set of chat messages - either replaying existing messages
@@ -144,11 +146,11 @@ def draw_messages(
                         else:
                             st.write(msg.content)
 
-                        # if is_new: #if is a new message, generate the voice a play it
-                        #     # pass
-                        #     text_to_speech(msg.content)
-                        #     duration = autoplay_audio("output.wav")
-                        #     sleep(duration * 0.9)
+                        if is_new and voice: #if is a new message, generate the voice a play it
+                            # pass
+                            text_to_speech(msg.content)
+                            duration = autoplay_audio("output.wav")
+                            sleep(duration * 0.9)
 
                     if msg.tool_calls:
                         # Create a status container for each tool call and store the
@@ -209,6 +211,7 @@ def reset_state():
 
 # Initialize chat history
 if "messages" not in st.session_state:
+    st.session_state.voice = False
     reset_state()
 messages: List[ChatMessage] = st.session_state.messages
 
@@ -277,6 +280,13 @@ if user_input :#:
     new_events = _print_ai_message(event, st.session_state._printed) #message to end user
     # print(f"_printed : {st.session_state._printed}")
     # print(f'new events to draw: {new_events}')
-    draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat)
+    draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat, voice=st.session_state.voice)
     # st.rerun()
+
+def enable_voice():
+    st.session_state.voice = not st.session_state.voice
+    print(f'Voice {st.session_state.voice}')
+
+button('🔉', key="button1", on_click= enable_voice)
+  
 

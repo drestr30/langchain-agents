@@ -12,12 +12,12 @@ import json
 # model.py
 try:
     # Try relative import when used as part of a package
-    from .tools import market_rates_tool, property_assesment_tool, questionnaire_tool, transfer_human_agent, save_questionnaire_tool, knowledge_base_tool
-    from .utils import CompleteOrEscalate, State
-except ImportError:
-    # Fallback to absolute import when running directly
     from tools import market_rates_tool, property_assesment_tool, questionnaire_tool, transfer_human_agent, save_questionnaire_tool, knowledge_base_tool
     from utils import CompleteOrEscalate, State
+except ImportError:
+    # Fallback to absolute import when running directly
+    from .tools import market_rates_tool, property_assesment_tool, questionnaire_tool, transfer_human_agent, save_questionnaire_tool, knowledge_base_tool
+    from .utils import CompleteOrEscalate, State
 #    current interest rate, term and bank,
 #     whether there are other individuals on the title, 
 #     property address, 

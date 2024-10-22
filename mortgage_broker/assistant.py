@@ -13,17 +13,17 @@ import os
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnablePassthrough
 
-try:
+# try:
     # Try relative import when used as part of a package
-    from .utils import *
-    from .renewal import *
-    from .tools import *
-    
-except ImportError:
-    # Fallback to absolute import when running directly
-    from utils import *
-    from renewal import *
-    from tools import *
+from .utils import *
+from .renewal import *
+from .tools import *
+
+# except ImportError:
+#     # Fallback to absolute import when running directly
+#     from utils import *
+#     from renewal import *
+#     from tools import *
 
 load_dotenv()
 

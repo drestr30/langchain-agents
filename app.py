@@ -11,9 +11,10 @@ from tts import text_to_speech
 import base64
 from time import sleep
 from pydub import AudioSegment
-from mortgage_agent.assistant import agent
+# from mortgage_agent.assistant import agent
+from tivly.manager import agent
+from mortgage_broker.assistant import agent
 from streamlit_extras.stateful_button import button
-# from tivly.manager import agent
 import io
 import random
 import os 
@@ -23,6 +24,39 @@ os.environ["AZURE_OPENAI_ENDPOINT"] = st.secrets["AZURE_OPENAI_ENDPOINT"]
 os.environ["AZURE_SPEECH_KEY"] = st.secrets["AZURE_SPEECH_KEY"]
 os.environ["AZURE_REGION"] = st.secrets["AZURE_REGION"]
 
+#@st.cache(allow_output_mutation=True)
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def set_png_as_page_bg(png_file):
+    bin_str = get_base64_of_bin_file(png_file)
+    page_bg_img = '''
+    <style>
+    .main {
+    background-image: url("data:image/png;base64,%s");
+    background-size: cover; /* Ensures the image covers the entire area */
+    background-position: center; /* Centers the image */
+    background-attachment: local;
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    }
+
+    .st-emotion-cache-1voybx5 {
+    background-color: white;
+    }
+    
+    .st-emotion-cache-1c7y2kd {
+    background-color: #daedfd8f}
+
+
+    </style>
+    ''' % bin_str
+    
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    return
+
+set_png_as_page_bg('./background_asset.png')
 
 st.markdown(
             """
@@ -196,7 +230,17 @@ def message_generator(messages) -> Generator[ChatMessage, None, None]:
 
 # _printed = set()
 _loggs = set()
-st.title("BL Agents")
+logo, title = st.columns([0.08, 0.92])
+logo.image(Image.open("./home.png"), width=50)
+title.header("BLD Mortgage Assistant")
+st.selectbox('Tone:', ['Approachable','Straightforward','Cheerful','Polished'])
+
+def enable_voice():
+    st.session_state.voice = not st.session_state.voice
+    print(f'Voice {st.session_state.voice}')
+
+button('🔉', key="button1", on_click= enable_voice)
+
 
 human_avatar = Image.open("./human_asset.png")
 ai_avatar = Image.open("./ai_asset.png")
@@ -223,12 +267,12 @@ config = {
     }
 }
 
-chat = st.container(height=500)
+chat = st.container(height=500, border=True)
 
 # st.button('Reset', on_click=reset_state)
 
 if len(messages) == 0:
-    WELCOME = "Welcome to BLBank. How can I assist you today?"
+    WELCOME = "Welcome to BLD Mortgages. How can I assist you today?"
     with chat.chat_message("ai", avatar=ai_avatar):
         st.write(WELCOME)
 
@@ -240,8 +284,12 @@ def amessage_iter(messages):
 
 draw_messages(amessage_iter(messages), chat=chat)
 
-msg_input = st.chat_input("How can I help you?")
-audio = audiorecorder(start_prompt="", stop_prompt="", pause_prompt="", show_visualizer=True, key=None)
+
+input_container = st.container()
+
+with input_container:
+    msg_input = st.chat_input("How can I help you?")
+    audio = audiorecorder(start_prompt="", stop_prompt="", pause_prompt="", show_visualizer=True, key='recorder')
 
 transcription = None
 if len(audio) > 0: 
@@ -283,10 +331,6 @@ if user_input :#:
     draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat, voice=st.session_state.voice)
     # st.rerun()
 
-def enable_voice():
-    st.session_state.voice = not st.session_state.voice
-    print(f'Voice {st.session_state.voice}')
 
-button('🔉', key="button1", on_click= enable_voice)
   
 

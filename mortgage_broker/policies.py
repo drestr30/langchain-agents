@@ -19,7 +19,7 @@ def extract_text_from_txt(txt_file):
     return text
 
 # Load the .txt document
-document_path = r'C:\Users\davidre\Documents\langchain-agent\mortgage_broker\policies.txt'
+document_path = './mortgage_broker/policies.txt'
 doc_text = extract_text_from_txt(document_path)
 
 # Split document into chunks based on paragraphs (double newlines)

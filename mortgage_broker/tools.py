@@ -156,5 +156,5 @@ def knowledge_base_tool(query:str)-> str:
 
 if __name__ == "__main__":
 
-    r = market_rates_tool.invoke('My current mortgage is up for renewal in 3 months. What kind of rates can BLD Mortgages offer me?')
+    r = knowledge_base_tool.invoke('How does your renewal process work, especially for customers switching from another lender?"')
     print(r)

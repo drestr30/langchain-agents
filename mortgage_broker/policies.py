@@ -43,7 +43,7 @@ embeddings = AzureOpenAIEmbeddings(
 vector_store = FAISS.from_texts(texts, embeddings)
 
 # Create the retriever for the QnA system
-retriever = vector_store.as_retriever(k=2)
+retriever = vector_store.as_retriever(search_kwargs={'k': 1})
 
 # rag_prompt ="""You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. 
 # If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
@@ -74,6 +74,11 @@ qa_chain = (
 
 
 if __name__ == '__main__':
-    res = qa_chain.invoke('How does your renewal process work, especially for customers switching from another lender? ')
+
+    q = 'What makes BLD Mortgages different from other mortgage brokers or my current bank?'
+
+    context = retriever.invoke(q)
+    print(context)
+    res = qa_chain.invoke(q)
 
     print(res)

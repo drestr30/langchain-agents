@@ -45,18 +45,17 @@ vector_store = FAISS.from_texts(texts, embeddings)
 # Create the retriever for the QnA system
 retriever = vector_store.as_retriever(search_kwargs={'k': 1})
 
-# rag_prompt ="""You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. 
-# If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
-# Question: {question} 
-# Context: {context} 
-# Answer:
-# """
-# prompt = ChatPromptTemplate.from_messages([
-#         ("system",rag_prompt),
-#         ]
-# )
+rag_prompt ="""Answer the question as similar as possible to the provided context.
+Question: {question} 
+Context: {context} 
+Answer:
+"""
+prompt = ChatPromptTemplate.from_messages([
+        ("system",rag_prompt),
+        ]
+)
 
-prompt = hub.pull("rlm/rag-prompt")
+# prompt = hub.pull("rlm/rag-prompt")
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
@@ -75,7 +74,7 @@ qa_chain = (
 
 if __name__ == '__main__':
 
-    q = 'What makes BLD Mortgages different from other mortgage brokers or my current bank?'
+    q = 'What makes your company the right choice for me?'
 
     context = retriever.invoke(q)
     print(context)

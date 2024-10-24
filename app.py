@@ -100,7 +100,8 @@ def draw_messages(
     messages_iter,
     is_new=False,
     chat=None,
-    voice=False
+    voice=False,
+    tools=False
 ):
     """
     Draws a set of chat messages - either replaying existing messages
@@ -186,7 +187,7 @@ def draw_messages(
                             duration = autoplay_audio("output.wav")
                             sleep(duration * 0.9)
 
-                    if msg.tool_calls:
+                    if msg.tool_calls and tools:
                         # Create a status container for each tool call and store the
                         # status container by ID to ensure results are mapped to the
                         # correct status container.
@@ -216,6 +217,22 @@ def draw_messages(
                             status.write("Output:")
                             status.write(tool_result.content)
                             status.update(state="complete")
+                    else:
+                         # Expect one ToolMessage for each tool call.
+                        call_results = {}
+                        for tool_call in msg.tool_calls:
+                            # status = st.status(
+                            #     f"""Tool Call: {tool_call["name"]}""",
+                            #     state="running" if is_new else "complete",
+                            # )
+                            call_results[tool_call["id"]] = None
+                            # status.write("Input:")
+                            # status.write(tool_call["args"])
+
+                        # Expect one ToolMessage for each tool call.
+                        for _ in range(len(call_results)):
+                            tool_result: ChatMessage = next(messages_iter, None)
+
 
             # In case of an unexpected message type, log an error and stop
             case _:
@@ -234,6 +251,10 @@ logo, title = st.columns([0.08, 0.92])
 logo.image(Image.open("./home.png"), width=50)
 title.header("BLD Mortgage Assistant")
 st.selectbox('Tone:', ['Approachable','Straightforward','Cheerful','Polished'])
+
+with st.sidebar:
+    st.subheader('Settings')
+    show_tools = st.checkbox('Show tool call', False)
 
 def enable_voice():
     st.session_state.voice = not st.session_state.voice
@@ -282,7 +303,7 @@ def amessage_iter(messages):
         for m in messages:
             yield m
 
-draw_messages(amessage_iter(messages), chat=chat)
+draw_messages(amessage_iter(messages), chat=chat, tools=show_tools)
 
 
 input_container = st.container()
@@ -328,7 +349,7 @@ if user_input :#:
     new_events = _print_ai_message(event, st.session_state._printed) #message to end user
     # print(f"_printed : {st.session_state._printed}")
     # print(f'new events to draw: {new_events}')
-    draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat, voice=st.session_state.voice)
+    draw_messages(message_generator(new_events[1:]), is_new=True, chat=chat, voice=st.session_state.voice, tools=show_tools)
     # st.rerun()
 
 

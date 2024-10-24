@@ -141,7 +141,7 @@ def questionnaire_tool() -> str:
 def save_questionnaire_tool(query):
     """ Run this tool to save the answers provided by the customer
     Args: 
-    query: list[dict] ex. [{'question': 'question1', 'answer': 'answer1'}, ...] """
+    query: list[dict] ex. [{'field': 'provider', 'answer': 'answer1'}, ...] """
 
     return query
 

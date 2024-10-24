@@ -126,10 +126,10 @@ def property_assesment_tool(borrow_value:int, property_value:int) -> str:
 def questionnaire_tool() -> str: 
     """ Run this tool the get the questionnaire to ask to the customer
     """
-    return """Here's the list of questions:
-            1. When is your mortgage set to renew and who's your current mortgage provider?
-            2. How much is left on your mortgage balance, and what’s your estimate of the current value of your property?
-            3. Can you confirm which province your home is located in, and if your mortgage is insured by CMHC, Genworth Canada, or Canada Guarantee?
+    return """Here's the list of questions: \n
+1. When is your mortgage set to renew and who's your current mortgage provider?\n
+2. How much is left on your mortgage balance, and what’s your estimate of the current value of your property?\n
+3. Can you confirm which province your home is located in, and if your mortgage is insured by CMHC, Genworth Canada, or Canada Guarantee?
 """
             # 1. When is your mortgage set to renew?
             # 2. Who's your current mortgage provider?

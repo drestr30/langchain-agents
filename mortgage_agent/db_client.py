@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 # load_dotenv()
 
 API_URL = "https://kapti-recommendations.azurewebsites.net/api"
-Auth = "Ln6o_6SJHmauzzQNeA3gIn8LAziKj-rHDrc8B23NyZeBAzFunkHWzA%3D%3D"
    
 def get_customer_info(customer_id: str) -> str:
     try:
@@ -15,7 +14,7 @@ def get_customer_info(customer_id: str) -> str:
         }
         
         # Make the API call
-        response = requests.post(f"{API_URL}/get_customer_info?code={Auth}", json=payload)
+        response = requests.post(f"{API_URL}/get_customer_info?code=Ln6o_6SJHmauzzQNeA3gIn8LAziKj-rHDrc8B23NyZeBAzFunkHWzA%3D%3D", json=payload)
         
         if response.status_code == 200:
             r = response.json()  # Assume API returns a list of dictionaries
@@ -38,7 +37,7 @@ def update_customer_address(new_address, customer_id) -> str:
         }
 
         # Make the API call
-        response = requests.post(f"{API_URL}/update_customer_info?code={Auth}", json=payload)
+        response = requests.post(f"{API_URL}/update_customer_info?code=7HQe6iEYKB45sGHGWHO4EdXR3IRv08dFYYXfrdzzVljTAzFuiesnbA%3D%3D", json=payload)
 
         if response.status_code == 200:
             print("Update successful")
@@ -50,6 +49,6 @@ def update_customer_address(new_address, customer_id) -> str:
     return msg
 
 if __name__ == "__main__":
-    res = get_customer_info(1)
+    res = update_customer_address('test', 1)
     print(res)
 

@@ -11,9 +11,9 @@ from tts import text_to_speech
 import base64
 from time import sleep
 from pydub import AudioSegment
-# from mortgage_agent.assistant import agent
-from tivly.manager import agent
-from mortgage_broker.assistant import agent
+from mortgage_agent.assistant import agent as eqb_agent
+from tivly.manager import agent as tivly_agent
+from mortgage_broker.assistant import agent as broker_agent
 from streamlit_extras.stateful_button import button
 import io
 import random
@@ -249,12 +249,14 @@ def message_generator(messages) -> Generator[ChatMessage, None, None]:
 _loggs = set()
 logo, title = st.columns([0.08, 0.92])
 logo.image(Image.open("./home.png"), width=50)
-title.header("BLD Mortgage Assistant")
+title.header("Conversational AI Assistant")
 st.selectbox('Tone:', ['Approachable','Straightforward','Cheerful','Polished'])
 
 with st.sidebar:
     st.subheader('Settings')
     show_tools = st.checkbox('Show tool call', False)
+
+    picked_agent = st.selectbox('Agent Scenario:', ['Brokers', 'EQB', 'Tivly'])
 
 def enable_voice():
     st.session_state.voice = not st.session_state.voice
@@ -266,7 +268,9 @@ button('🔉', key="button1", on_click= enable_voice)
 human_avatar = Image.open("./human_asset.png")
 ai_avatar = Image.open("./ai_asset.png")
 
-selected_agent = agent 
+agent_router = {'EQB': eqb_agent, 'Tivly': tivly_agent, 'Brokers': broker_agent}
+
+selected_agent = agent_router[picked_agent] 
 
 def reset_state():
     st.session_state.messages =  []
@@ -293,7 +297,7 @@ chat = st.container(height=500, border=True)
 # st.button('Reset', on_click=reset_state)
 
 if len(messages) == 0:
-    WELCOME = "Welcome to BLD Mortgages. How can I assist you today?"
+    WELCOME = "Welcome, how can I assist you today?"
     with chat.chat_message("ai", avatar=ai_avatar):
         st.write(WELCOME)
 
